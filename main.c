@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 // start | data store
 struct Users {
@@ -18,9 +19,16 @@ struct TransactionHistory {
 
 void main()
 {
+  // start | initial value
+  int activeUser = -1, numOfUser = 2, numOfTransactionHistory = 32, minimumTransaction = 100 ,inputMenu;
+  char inputIdCard[10];
+  char inputPassword[10];
+  bool isLogout = false;
+  // end | initial value
+
   // start | initial data store
   //create instance from User to user 
-  struct Users user[2];
+  struct Users user[numOfUser];
   // user1
   strcpy(user[0].idCard, "12345");
   strcpy(user[0].password, "12345");
@@ -31,18 +39,12 @@ void main()
   user[1].balance = 2500;
 
   // create instance from TransactionHistory
-  struct TransactionHistory transactionHistory[64];
+  struct TransactionHistory transactionHistory[numOfTransactionHistory];
   int transactionHistoryLabel = 0;
   // end | initial data store
 
-  // start | initial value
-  int activeUser = -1;
-  int inputMenu;
-  char inputIdCard[10];
-  char inputPassword[10];
-  int isLogout = 0;
-  // end | initial value
   do{
+    printf("E-money Machine (Login)\n\n");
     // start | user input
     printf("idCard\t: ");
     scanf("%s", &inputIdCard);
@@ -51,7 +53,7 @@ void main()
     // end | user input
 
     // start | check user idCard and password
-    for(int i=0; i<2; i++){
+    for(int i=0; i < numOfUser; i++){
       if(strcmp(user[i].idCard, inputIdCard) == 0 && strcmp(user[i].password, inputPassword) == 0){
         activeUser = i;
       }
@@ -60,10 +62,11 @@ void main()
 
     // start | show status user
     if(activeUser != -1){
-        int menu = 1;
-        while (menu == 1){
+        bool menu = true;
+        while (menu){
           system("clear");
-          printf("ID Card\t: %s \n", user[activeUser].idCard);
+          printf("E-money Machine (Dashboard)\n\n");
+          printf("ID Card\t: %s \n\n", user[activeUser].idCard);
 
           // menu
           printf("Menu (select by number) :\n");
@@ -77,6 +80,7 @@ void main()
           switch (inputMenu){
             case 1:
               system("clear");
+              printf("E-money Machine (Balance)\n\n");
               printf("ID Card\t: %s \n", user[activeUser].idCard);
               printf("Balance\t: $%d \n\n", user[activeUser].balance);
               printf("1. Back\n");
@@ -85,7 +89,7 @@ void main()
 
               switch (inputMenu){
                 case 1:
-                  menu = 1;
+                  menu = true;
                   break;
                 default:
                   printf("Invalid Input!\n");
@@ -95,6 +99,7 @@ void main()
             case 2:
               // transfer
               system("clear");
+              printf("E-money Machine (Transfer)\n\n");
               printf("ID Card\t: %s \n", user[activeUser].idCard);
               printf("Balance\t: $%d \n\n", user[activeUser].balance);
 
@@ -112,32 +117,28 @@ void main()
 
               switch (inputMenu){
                 case 1:
-                  menu = 1;
+                  menu = true;
                   break;
                 case 9:
-                  if(transferNominal >= 100 && transferNominal <= user[activeUser].balance){
+                  if(transferNominal >= minimumTransaction && transferNominal <= user[activeUser].balance){
                     system("clear");
-
-                    // TODO process transaction
                     // added transaction
-                    strcpy(transactionHistory[transactionHistoryLabel].from, user[activeUser].idCard);
-                    strcpy(transactionHistory[transactionHistoryLabel].to, transferTo);
-
                     int transferToId = -1;
-                    for (int i = 0; i < 2; i++){
-                      if(strcmp(user[i].idCard, transferTo) == 0){
+                    for (int i = 0; i < numOfUser; i++){
+                      if(strcmp(user[i].idCard, transferTo) == 0 && strcmp(user[i].idCard, user[activeUser].idCard) != 0 ){
                         transferToId = i;
                       }
                     }
-
                     if(transferToId != -1){
+                      strcpy(transactionHistory[transactionHistoryLabel].from, user[activeUser].idCard);
+                      strcpy(transactionHistory[transactionHistoryLabel].to, transferTo);
                       transactionHistory[transactionHistoryLabel].nominal = transferNominal;
                       user[activeUser].balance -= transferNominal;
                       user[transferToId].balance += transferNominal;
                       transactionHistoryLabel++;
-                      printf("Transfer Success\n\n");
+                      printf("ALERT( Transfer Success )\n\n");
                     } else {
-                      printf("Transfer Failed, Invalid Target Card Id\n\n");
+                      printf("ALERT( Transfer Failed, Invalid Target Card Id )\n\n");
                     }
 
                     printf("1. Back\n");
@@ -145,7 +146,7 @@ void main()
                     scanf("%d", &inputMenu);
                     switch (inputMenu){
                       case 1:
-                        menu = 1;
+                        menu = true;
                         break;
                       default:
                         printf("Invalid Input!\n");
@@ -153,13 +154,13 @@ void main()
                     }
                   } else {
                     system("clear");
-                    printf("Transfer failed, insufficient balance\n\n");
+                    printf("ALERT( Transfer failed, insufficient balance )\n\n");
                     printf("1. Back\n");
                     printf("Selection (1) : ");
                     scanf("%d", &inputMenu);
                     switch (inputMenu){
                       case 1:
-                        menu = 1;
+                        menu = true;
                         break;
                       default:
                         printf("Invalid Input!\n");
@@ -168,20 +169,21 @@ void main()
                   }
                   break;
                 default:
-                  printf("Invalid Input transaction!");
+                  printf("ALERT( Invalid Input transaction! )\n\n");
                   break;
               }
               break;
             case 3:
               // print transaction by user
               system("clear");
+              printf("E-money Machine (Transaction History)\n\n");
               printf("ID Card\t: %s \n", user[activeUser].idCard);
               printf("Balance\t: $%d \n\n", user[activeUser].balance);
               int hasTransaction = 0;
-              for (int i = 0; i < 64; i++)
+              for (int i = 0; i < numOfTransactionHistory; i++)
               {
                 if( strcmp(transactionHistory[i].from, user[activeUser].idCard) == 0 || strcmp(transactionHistory[i].to, user[activeUser].idCard) == 0 ){
-                  printf("\nTransaction\n");
+                  printf("Transaction\n");
                   printf("from\t: %s \n", transactionHistory[i].from);
                   printf("to\t: %s \n", transactionHistory[i].to);
                   printf("nominal\t: $%d\n", transactionHistory[i].nominal);
@@ -199,7 +201,7 @@ void main()
 
               switch (inputMenu){
                 case 1:
-                  menu = 1;
+                  menu = true;
                   break;
                 default:
                   printf("Invalid Input!\n");
@@ -208,8 +210,9 @@ void main()
               break;
 
             case 0:
-              menu = 0;
-              isLogout = 1;
+              menu = false;
+              isLogout = true;
+              activeUser = -1;
               system("clear");
               break;
             default:
@@ -218,10 +221,11 @@ void main()
           }
         }
     }
-    else
-    {
-      printf("\nLogin Failed\n\n");
+    else{
+      system("clear");
+      printf("\nALERT( Login Failed )\n\n");
+      isLogout = true;
     }
     // end | show status user
-  } while (isLogout == 1);
+  } while (isLogout);
 }
