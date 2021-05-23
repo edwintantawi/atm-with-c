@@ -6,21 +6,21 @@
 struct Users {
   char idCard[10];
   char password[10];
-  int balance;
+  long int balance;
 };
 
 // history transaction
 struct TransactionHistory {
   char from[10];
   char to[10];
-  int nominal;
+  long int nominal;
 };
 // end | data store
 
 void main()
 {
   // start | initial value
-  int activeUser = -1, numOfUser = 2, numOfTransactionHistory = 32, minimumTransaction = 100 ,inputMenu;
+  int activeUser = -1, numOfUsers = 2, numOfTransactionHistory = 32, minimumTransaction = 100 ,inputMenu;
   char inputIdCard[10];
   char inputPassword[10];
   bool isLogout = false;
@@ -28,7 +28,7 @@ void main()
 
   // start | initial data store
   //create instance from User to user 
-  struct Users user[numOfUser];
+  struct Users user[numOfUsers];
   // user1
   strcpy(user[0].idCard, "12345");
   strcpy(user[0].password, "12345");
@@ -53,7 +53,7 @@ void main()
     // end | user input
 
     // start | check user idCard and password
-    for(int i=0; i < numOfUser; i++){
+    for(int i=0; i < numOfUsers; i++){
       if(strcmp(user[i].idCard, inputIdCard) == 0 && strcmp(user[i].password, inputPassword) == 0){
         activeUser = i;
       }
@@ -124,7 +124,7 @@ void main()
                     system("clear");
                     // added transaction
                     int transferToId = -1;
-                    for (int i = 0; i < numOfUser; i++){
+                    for (int i = 0; i < numOfUsers; i++){
                       if(strcmp(user[i].idCard, transferTo) == 0 && strcmp(user[i].idCard, user[activeUser].idCard) != 0 ){
                         transferToId = i;
                       }
