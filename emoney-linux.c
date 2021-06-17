@@ -32,7 +32,7 @@ void TransactionView(struct Users users[numOfUsers], struct TransactionHistory t
 
 void main(){
   bool isRunning = true;
-  struct Users users[2] = {
+  struct Users users[numOfUsers] = {
       {"12345", "12345", 1000},
       {"54321", "54321", 2000}
   };
@@ -260,7 +260,7 @@ void TransactionView(struct Users users[numOfUsers], struct TransactionHistory t
       printf("--------------------------------\n");
     }
 
-      printf("\n==============MENU==============\n");
+    printf("\n==============MENU==============\n");
     printf("1. Back\n");
     printf("\nSelection (1) : ");
     scanf("%d", &inputMenu);
